@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="ar">
+<head>
+  <meta charset="UTF-8">
+  <title>الصفحة الرئيسية - موقع الاختبارات</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: linear-gradient(135deg, #a8e063, #56ab2f);
+      font-family: "Cairo", sans-serif;
+    }
+    .container {
+      text-align: center;
+    }
+    .logo img {
+      max-width: 150px;
+      margin-bottom: 30px;
+      animation: fadeInDown 1s ease-in-out;
+    }
+    .btn {
+      display: block;
+      margin: 15px auto;
+      padding: 15px 30px;
+      font-size: 22px;
+      font-weight: bold;
+      color: #fff;
+      background: #2e7d32;
+      border: none;
+      border-radius: 40px;
+      cursor: pointer;
+      transition: 0.3s;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      animation: fadeInUp 0.8s ease-in-out;
+    }
+    .btn:hover {
+      background: #1b5e20;
+      transform: scale(1.05);
+    }
+
+    /* أنيميشن */
+    @keyframes fadeInDown {
+      from { opacity: 0; transform: translateY(-30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <!-- اللوجو -->
+    <div class="logo">
+      <img src="https://imgg.io/images/2025/09/02/4707d44f2780612cd69954909d9bf395.png" alt="شعار الموقع">
+    </div>
+
+    <!-- الأزرار الرئيسية -->
+    <button class="btn" onclick="location.href='r4-term1.html'">رابعة ابتدائي الترم الأول</button>
+    <button class="btn" onclick="location.href='r4-term2.html'">رابعة ابتدائي الترم الثاني</button>
+    <button class="btn" onclick="location.href='r5-term1.html'">خامسة ابتدائي الترم الأول</button>
+    <button class="btn" onclick="location.href='r5-term2.html'">خامسة ابتدائي الترم الثاني</button>
+  </div>
+</body>
+</html>
