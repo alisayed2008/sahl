@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <title>منصة استعلام النتائج</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- Google Font -->
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- html2canvas -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    :root{
+      --bg:#0f172a;
+      --card:#111827;
+      --border:#334155;
+      --primary:#6366f1;
+      --success:#22c55e;
+      --text:#e5e7eb;
+      --muted:#94a3b8;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:'Cairo',sans-serif;
+      background:linear-gradient(135deg,#020617,#0f172a);
+      color:var(--text);
+    }
+    .container{
+      max-width:1100px;
+      margin:auto;
+      padding:24px;
+    }
+    header{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      margin-bottom:20px;
+    }
+    h1{margin:0;font-size:24px}
+    .card{
+      background:linear-gradient(135deg,#020617,#111827);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:20px;
+      box-shadow:0 20px 40px rgba(0,0,0,.4);
+      animation:fadeUp .6s ease;
+    }
+    @keyframes fadeUp{
+      from{opacity:0;transform:translateY(10px)}
+      to{opacity:1;transform:none}
+    }
+    label{font-size:13px;color:var(--muted)}
+    select,input{
+      width:100%;
+      padding:10px;
+      margin-top:6px;
+      background:#020617;
+      border:1px solid var(--border);
+      border-radius:10px;
+      color:var(--text);
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+      gap:16px;
+    }
+    .actions{
+      display:flex;
+      justify-content:flex-end;
+      gap:10px;
+      margin-top:16px;
+    }
+    button{
+      padding:10px 18px;
+      border-radius:10px;
+      border:none;
+      cursor:pointer;
+      font-family:'Cairo',sans-serif;
+      font-weight:600;
+    }
+    .btn-primary{
+      background:var(--primary);
+      color:#fff;
+    }
+    .btn-outline{
+      background:transparent;
+      color:var(--text);
+      border:1px solid var(--border);
+    }
+    .btn-success{
+      background:var(--success);
+      color:#022c22;
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      margin-top:16px;
+      font-size:14px;
+    }
+    th,td{
+      padding:10px;
+      border-bottom:1px solid var(--border);
+      text-align:center;
+    }
+    th{color:var(--muted);font-size:12px}
+    .hidden{display:none}
+    .result-card{
+      margin-top:24px;
+      animation:fadeUp .6s ease;
+    }
+    footer{
+      margin-top:30px;
+      text-align:center;
+      font-size:12px;
+      color:var(--muted);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>منصة استعلام نتائج الامتحانات</h1>
+  </header>
+
+  <!-- SEARCH CARD -->
+  <div class="card">
+    <div class="grid">
+      <div>
+        <label>المرحلة الدراسية</label>
+        <select id="stage">
+          <option>أولى ثانوي</option>
+          <option>ثانية ثانوي</option>
+          <option>ثالثة ثانوي</option>
+          <option>الصف الثالث الإعدادي</option>
+        </select>
+      </div>
+      <div>
+        <label>الترم</label>
+        <select id="term">
+          <option>الترم الأول</option>
+          <option>الترم الثاني</option>
+        </select>
+      </div>
+      <div>
+        <label>نوع البحث</label>
+        <select id="type">
+          <option>رقم الجلوس</option>
+          <option>الاسم</option>
+          <option>الرقم القومي</option>
+        </select>
+      </div>
+      <div>
+        <label>القيمة</label>
+        <input id="query" placeholder="اكتب هنا">
+      </div>
+    </div>
+
+    <div class="actions">
+      <button class="btn-outline" onclick="resetForm()">مسح</button>
+      <button class="btn-primary" onclick="search()">استعلام</button>
+    </div>
+  </div>
+
+  <!-- RESULT -->
+  <div id="result" class="card result-card hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+      <div>
+        <h3 id="studentName">—</h3>
+        <div id="studentInfo" style="font-size:13px;color:var(--muted)"></div>
+      </div>
+      <button class="btn-success" onclick="shareImage()">مشاركة كصورة</button>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>المادة</th>
+          <th>العظمى</th>
+          <th>الصغرى</th>
+          <th>درجة الطالب</th>
+        </tr>
+      </thead>
+      <tbody id="subjects"></tbody>
+      <tfoot>
+        <tr>
+          <th>المجموع</th>
+          <th id="totalMax"></th>
+          <th></th>
+          <th id="totalGrade"></th>
+        </tr>
+        <tr>
+          <th>النسبة المئوية</th>
+          <th colspan="3" id="percent"></th>
+        </tr>
+      </tfoot>
+    </table>
+  </div>
+
+  <footer>
+    نظام استعلام نتائج — واجهة HTML حديثة قابلة للربط مع أي Backend
+  </footer>
+</div>
+
+<script>
+function resetForm(){
+  document.getElementById("query").value="";
+  document.getElementById("result").classList.add("hidden");
+}
+
+function search(){
+  const q=document.getElementById("query").value.trim();
+  if(!q){alert("من فضلك أدخل قيمة البحث");return;}
+
+  // بيانات تجريبية (تستبدلها ببيانات حقيقية من السيرفر)
+  const subjects=[
+    {name:"لغة عربية",max:100,min:0,grade:82},
+    {name:"لغة إنجليزية",max:100,min:0,grade:74},
+    {name:"رياضيات",max:100,min:0,grade:69},
+    {name:"فيزياء",max:100,min:0,grade:71},
+    {name:"كيمياء",max:100,min:0,grade:77},
+  ];
+
+  let totalMax=0,totalGrade=0;
+  const tbody=document.getElementById("subjects");
+  tbody.innerHTML="";
+  subjects.forEach(s=>{
+    totalMax+=s.max;
+    totalGrade+=s.grade;
+    tbody.innerHTML+=`
+      <tr>
+        <td>${s.name}</td>
+        <td>${s.max}</td>
+        <td>${s.min}</td>
+        <td><b>${s.grade}</b></td>
+      </tr>`;
+  });
+
+  document.getElementById("studentName").innerText="أحمد محمد علي";
+  document.getElementById("studentInfo").innerText=
+    document.getElementById("stage").value+" — "+
+    document.getElementById("term").value;
+
+  document.getElementById("totalMax").innerText=totalMax;
+  document.getElementById("totalGrade").innerText=totalGrade;
+  document.getElementById("percent").innerText=
+    ((totalGrade/totalMax)*100).toFixed(2)+"%";
+
+  document.getElementById("result").classList.remove("hidden");
+}
+
+function shareImage(){
+  html2canvas(document.getElementById("result"),{scale:2})
+  .then(canvas=>{
+    const img=canvas.toDataURL("image/png");
+    const w=window.open();
+    w.document.write(`<img src="${img}" style="max-width:100%">`);
+  });
+}
+</script>
+
+</body>
+</html>
